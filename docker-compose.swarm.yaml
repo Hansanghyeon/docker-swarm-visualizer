@@ -1,0 +1,24 @@
+version: "3.7"
+
+########################### SERVICES
+services:
+  visualizer:
+    image: dockersamples/visualizer:stable
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        - traefik.enable=true
+        ## HTTP Routers
+        - traefik.http.routers.swarm-visualizer.entrypoints=websecure
+        - traefik.http.routers.swarm-visualizer.rule=Host(`swarm.nas.hyeon.pro`)
+        - traefik.http.routers.swarm-visualizer.tls.certresolver=leresolver
+        - traefik.http.services.swarm-visualizer.loadbalancer.server.port=8080
+
+########################### NETWORKS
+networks:
+  default:
+    external: 
+      name: proxy-main
